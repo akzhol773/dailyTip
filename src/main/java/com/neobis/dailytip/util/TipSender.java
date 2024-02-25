@@ -32,7 +32,7 @@ public class TipSender {
     private String fromMail;
 
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     public void sendEmail(){
         sendDailyTip();
     }
