@@ -83,7 +83,7 @@ public class TipSender {
                 String urlToUnsubscribe = "https://neobis-dailytip.up.railway.app/deletePage";
 
 
-                String text = String.format("Here is a daily inspirational quote for you: \n \n%s \n \nAuthor: %s \n \nTo unsubscribe click here: %s", quote, author, urlToUnsubscribe);
+                String text = String.format("Here is a daily inspirational quote for you: \n \n%s \n \nAuthor: %s \n \n \n \n \n \nTo unsubscribe click here: %s", quote, author, urlToUnsubscribe);
                 mailBody.setQuote(text);
 
             }
