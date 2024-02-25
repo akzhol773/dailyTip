@@ -80,7 +80,7 @@ public class TipSender {
                 JSONObject jsonObject = jsonArray.getJSONObject(0);
                 String quote = jsonObject.getString("q");
                 String author = jsonObject.getString("a");
-                String urlToUnsubscribe = "http://localhost:8080/deletePage";
+                String urlToUnsubscribe = "https://neobis-dailytip.up.railway.app/deletePage";
 
 
                 String text = String.format("Here is a daily inspirational quote for you: \n \n%s \n \nAuthor: %s \n \nTo unsubscribe click here: %s", quote, author, urlToUnsubscribe);
