@@ -1,32 +1,66 @@
 package com.neobis.dailytip.controller;
 
+
 import com.neobis.dailytip.dto.UsersDto;
 import com.neobis.dailytip.entities.Users;
 import com.neobis.dailytip.service.UserService;
 import com.neobis.dailytip.util.TipSender;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
     private final TipSender tipSender;
 
+
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("user", new Users());
+        return "register";
+    }
+
+    @GetMapping("/deletePage")
+    public String deleteUser(Model model) {
+        model.addAttribute("user", new Users());
+        return "deleteForm";
+    }
+
+
+
+
     @PostMapping("/addUser")
-    public ResponseEntity<String> addUser(@RequestBody UsersDto user){
-
-          userService.addUser(user);
-          tipSender.sendFirstTip(user.email(), user.name());
-          return ResponseEntity.ok().body("Added successfully");
-
+    public String addUser(@Valid @ModelAttribute("user") UsersDto user, BindingResult result){
+        Users existingUserEmail = userService.findByEmail(user.email());
+        if(existingUserEmail != null && existingUserEmail.getEmail() != null && !existingUserEmail.getEmail().isEmpty()){
+            return "redirect:register?fail";
+        }
+        if(result.hasErrors()){
+            return "register"; // No need to add 'user' attribute here, Thymeleaf automatically redisplay form data
+        }
+        userService.addUser(user);
+        tipSender.sendFirstTip(user.email(), user.name());
+        return "registerSuccess";
     }
 
-    @DeleteMapping("/delete/{email}")
-    public ResponseEntity<String> delete(@PathVariable String email) {
-        userService.unsubscribeUser(email);
-        return ResponseEntity.ok().body("User unsubscribed  successfully");
+
+    @PostMapping("/deleteUser")
+    public String delUser(@Valid @ModelAttribute("user") UsersDto user, BindingResult result){
+        Users existingUserEmail = userService.findByEmail(user.email());
+        if(existingUserEmail != null && existingUserEmail.getEmail() != null && !existingUserEmail.getEmail().isEmpty()){
+            userService.deleteUserByEmail(user.email());
+            return "deleteSuccess";
+        }
+        if(result.hasErrors()){
+            return "deleteForm"; // No need to add 'user' attribute here, Thymeleaf automatically redisplay form data
+        }
+
+        return "redirect:deletePage?fail ";
     }
+
 }

@@ -24,6 +24,7 @@ public class TipSender {
 
     private final JavaMailSender mailSender;
     private final UserService userService;
+    String key = System.getenv("QUOTE_KEY");
 
 
 
@@ -57,7 +58,7 @@ public class TipSender {
 
     public MailBody getQuote(){
         MailBody mailBody = new MailBody();
-        String url = "https://zenquotes.io/api/random/671c06f7f34cb7f6357ff41b960b38e0";
+        String url = "https://zenquotes.io/api/random/"+key;
         try {
             URL apiUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
@@ -79,10 +80,10 @@ public class TipSender {
                 JSONObject jsonObject = jsonArray.getJSONObject(0);
                 String quote = jsonObject.getString("q");
                 String author = jsonObject.getString("a");
-                String urlToUnsubscribe = "www.example.com";
+                String urlToUnsubscribe = "http://localhost:8080/deletePage";
 
 
-                String text = String.format("Here is your daily inspirational quote: \n \n%s \n \nAuthor: %s \n \nTo unsubscribe click here: %s", quote, author, urlToUnsubscribe);
+                String text = String.format("Here is a daily inspirational quote for you: \n \n%s \n \nAuthor: %s \n \nTo unsubscribe click here: %s", quote, author, urlToUnsubscribe);
                 mailBody.setQuote(text);
 
             }

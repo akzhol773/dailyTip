@@ -18,26 +18,32 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    public ResponseEntity<String> addUser(UsersDto user) {
-        Optional<Users> existingUser = userRepository.findByEmail(user.email());
-        if (existingUser.isPresent()){
-            throw new UserAlreadyExistException("User already exist");
-        }
+    public void addUser(UsersDto user) {
         Users users = new Users();
         users.setEmail(user.email());
         users.setName(user.name());
         userRepository.save(users);
+    }
 
-        return ResponseEntity.ok().body("The user successfully added to the database");
-    }
-    public void unsubscribeUser(String email){
-        Users existingUser = userRepository.findUsersByEmail(email);
-        userRepository.delete(existingUser);
-    }
 
 
     public List<Users> getAllUsers() {
         List<Users> users = userRepository.findAll();
         return users;
+    }
+
+    public Users findByEmail(String email) {
+        Users existingUser = userRepository.findByEmail(email);
+        return existingUser;
+    }
+
+    public void deleteUserByEmail(String email) {
+        Optional<Users> userOptional = userRepository.findUsersByEmail(email);
+        if (userOptional.isPresent()) {
+            Users user = userOptional.get();
+            userRepository.delete(user);
+        } else {
+            throw new IllegalArgumentException("User with email " + email + " not found");
+        }
     }
 }
